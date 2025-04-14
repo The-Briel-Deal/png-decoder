@@ -61,6 +61,9 @@ bool read_image_header(uint8_t *data, struct image_header *image_header) {
   assert(image_header->height != 0);
   image_header->bit_depth = data[i + BIT_DEPTH_OFFSET];
   image_header->color_type = data[i + COLOR_TYPE_OFFSET];
+  image_header->compression_method = data[i + COMPRESSION_METHOD_OFFSET];
+  image_header->filter_method = data[i + FILTER_METHOD_OFFSET];
+  image_header->interlace_method = data[i + INTERLACE_METHOD_OFFSET];
 
   switch (image_header->color_type) {
   case COL_TYPE_GREYSCALE:
