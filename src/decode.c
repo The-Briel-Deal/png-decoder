@@ -1,6 +1,9 @@
-#include "decode.h"
 #include <stdint.h>
-#include <stdio.h>
+
+#include "decode.h"
+
+#define WIDTH_OFFSET 4
+#define HEIGHT_OFFSET 8
 
 static bool at_ihdr_label(uint8_t *data, int i) {
   if (data[i] != 'I')
@@ -26,9 +29,6 @@ uint32_t get_png_int(uint8_t *data) {
   return png_int;
 }
 
-#define WIDTH_OFFSET 4
-#define HEIGHT_OFFSET 8
-
 bool read_image_header(uint8_t *data, struct image_header *image_header) {
   int i = 0;
   while (!at_ihdr_label(data, i))
@@ -39,3 +39,4 @@ bool read_image_header(uint8_t *data, struct image_header *image_header) {
 
   return true;
 }
+
