@@ -4,9 +4,22 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+enum color_type {
+  COL_TYPE_GREYSCALE = 0,
+  COL_TYPE_TRUECOLOR = 2,
+  COL_TYPE_INDEXED = 3,
+  COL_TYPE_GREYSCALE_ALPHA = 4,
+  COL_TYPE_TRUECOLOR_ALPHA = 6,
+};
+
 struct image_header {
   uint32_t width;
   uint32_t height;
+  uint8_t bit_depth;
+  uint8_t color_type;
+  uint8_t compression_method;
+  uint8_t filter_method;
+  uint8_t interlace_method;
 };
 
 //! Pulls IHDR out of png datastream.
