@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,7 +56,9 @@ bool read_image_header(uint8_t *data, struct image_header *image_header) {
     i++;
 
   image_header->width = get_png_int(&data[i + WIDTH_OFFSET]);
+  assert(image_header->width != 0);
   image_header->height = get_png_int(&data[i + HEIGHT_OFFSET]);
+  assert(image_header->height != 0);
   image_header->bit_depth = data[i + BIT_DEPTH_OFFSET];
   image_header->color_type = data[i + COLOR_TYPE_OFFSET];
 

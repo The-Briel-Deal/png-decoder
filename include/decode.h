@@ -15,11 +15,11 @@ enum color_type {
 struct image_header {
   uint32_t width;
   uint32_t height;
-  uint8_t bit_depth;
-  uint8_t color_type;
-  uint8_t compression_method;
-  uint8_t filter_method;
-  uint8_t interlace_method;
+  int8_t bit_depth;
+  int8_t color_type;
+  int8_t compression_method;
+  int8_t filter_method;
+  int8_t interlace_method;
 };
 
 //! Pulls IHDR out of png datastream.
