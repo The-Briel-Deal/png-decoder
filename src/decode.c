@@ -5,6 +5,7 @@
 
 #include "decode.h"
 
+#define LEN_OFFSET -4
 #define WIDTH_OFFSET 4
 #define HEIGHT_OFFSET 8
 #define BIT_DEPTH_OFFSET 12
@@ -55,6 +56,7 @@ bool read_image_header(uint8_t *data, struct image_header *image_header) {
   while (!at_ihdr_label(data, i))
     i++;
 
+  image_header->chunk_len = get_png_int(&data[i + LEN_OFFSET]);
   image_header->width = get_png_int(&data[i + WIDTH_OFFSET]);
   assert(image_header->width != 0);
   image_header->height = get_png_int(&data[i + HEIGHT_OFFSET]);

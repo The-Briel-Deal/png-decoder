@@ -41,6 +41,7 @@ void test_read_image_header() {
   read_image_header(factorio_icon_data, &image_header);
   close_png_mmap(factorio_icon_data, BUF_SIZE);
 
+	assert(image_header.chunk_len == 13);
   assert(image_header.height == 64);
   assert(image_header.width == 64);
   assert(image_header.bit_depth == 8);
