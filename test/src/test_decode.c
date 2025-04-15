@@ -45,6 +45,11 @@ void test_read_image_header() {
   assert(image_header.width == 64);
   assert(image_header.bit_depth == 8);
   assert(image_header.color_type == COL_TYPE_TRUECOLOR_ALPHA);
+  // Only compression method 0 exists in the spec currently.
+  assert(image_header.compression_method == 0);
+  // Only filter method 0 exists currently.
+  assert(image_header.filter_method == 0);
+  assert(image_header.interlace_method == 0);
 }
 
 void run_png_decode_tests() { RUN_TEST(test_read_image_header); }
