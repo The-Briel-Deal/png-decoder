@@ -13,7 +13,9 @@ enum color_type {
 };
 
 struct image_header {
+  uint32_t crc;
   uint32_t chunk_len;
+
   uint32_t width;
   uint32_t height;
   int8_t bit_depth;
