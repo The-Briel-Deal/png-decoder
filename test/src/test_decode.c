@@ -72,7 +72,8 @@ void assert_inflated_file_eq(char *filename, char *expect_inflated) {
   uint8_t *deflated_memmap =
       mmap(compressed_input, BUF_SIZE, PROT_READ, MAP_PRIVATE, file, 0);
 
-  raw_inflate_once((void *)deflated_memmap, file_size(file), (void *)result, BUF_SIZE);
+  raw_inflate_once((void *)deflated_memmap, file_size(file), (void *)result,
+                   BUF_SIZE);
   assert(memcmp(result, expect_inflated, strlen(expect_inflated)) == 0);
 }
 
