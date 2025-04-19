@@ -57,7 +57,7 @@ bool read_image_header(uint8_t *data, struct image_header *image_header) {
   while (!at_ihdr_label(data, i))
     i++;
 
-	image_header->crc = get_png_int(&data[i + CRC_OFFSET]);
+  image_header->crc = get_png_int(&data[i + CRC_OFFSET]);
   image_header->chunk_len = get_png_int(&data[i + LEN_OFFSET]);
   image_header->width = get_png_int(&data[i + WIDTH_OFFSET]);
   assert(image_header->width != 0);
