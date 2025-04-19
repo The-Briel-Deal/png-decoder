@@ -1,4 +1,4 @@
-CFLAGS  := -std=gnu99 -Iinclude -Wall -Werror -lm 
+CFLAGS  := -std=gnu99 -Iinclude -Wall -Werror -lm -lz
 HEADERS := $(wildcard include/*.h)
 SOURCES := $(wildcard src/*.c)
 OBJECTS := $(addprefix build/, $(notdir $(SOURCES:.c=.o)))

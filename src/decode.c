@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <zlib.h>
 
 #include "decode.h"
 
@@ -111,6 +112,30 @@ bool read_image_header(uint8_t *data, struct image_header *image_header) {
     fprintf(stderr, "Color type '%i' is invalid.\n", image_header->color_type);
     exit(EXIT_FAILURE);
   }
+
+  return true;
+}
+
+bool inflate_body(uint8_t *in, int in_size, uint8_t *out, int out_size) {
+  int ret;
+  z_stream stream = {.zalloc = Z_NULL,
+                     .zfree = Z_NULL,
+                     .opaque = Z_NULL,
+                     .avail_in = 0,
+                     .next_in = Z_NULL};
+  ret = inflateInit2(&stream, -15);
+  assert(ret == 0);
+
+  stream.avail_in = in_size;
+  stream.next_in = in;
+
+  stream.avail_out = out_size;
+  stream.next_out = out;
+
+  ret = inflate(&stream, Z_FULL_FLUSH);
+  assert(ret == 1);
+
+	inflateEnd(&stream);
 
   return true;
 }

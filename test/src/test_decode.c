@@ -1,8 +1,11 @@
 #include <assert.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/mman.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include "decode.h"
@@ -54,4 +57,30 @@ void test_read_image_header() {
   assert(image_header.interlace_method == 0);
 }
 
-void run_png_decode_tests() { RUN_TEST(test_read_image_header); }
+const char TEST_INFLATE_IN_FILE_1[] = "test_data/deflated_test123";
+#define IN_BUF_SIZE 128
+const char TEST_INFLATE_BODY_EXPECT_OUT_1[] = "test123";
+#define OUT_SIZE_1 sizeof(TEST_INFLATE_BODY_EXPECT_OUT_1)
+
+void test_inflate_body() {
+  char result[OUT_SIZE_1];
+
+  char input_text[IN_BUF_SIZE];
+  int file = open(TEST_INFLATE_IN_FILE_1, O_RDONLY);
+
+	struct stat stat_res;
+	fstat(file, &stat_res);
+	u_int32_t size = stat_res.st_size;
+
+  uint8_t *deflated_memmap =
+      mmap(input_text, IN_BUF_SIZE, PROT_READ, MAP_PRIVATE, file, 0);
+
+
+  inflate_body((void*)deflated_memmap, size, (void *)result, OUT_SIZE_1);
+  assert(memcmp(result, TEST_INFLATE_BODY_EXPECT_OUT_1, OUT_SIZE_1) == 0);
+}
+
+void run_png_decode_tests() {
+  RUN_TEST(test_read_image_header);
+  RUN_TEST(test_inflate_body);
+}
