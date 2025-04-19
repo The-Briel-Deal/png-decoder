@@ -116,7 +116,7 @@ bool read_image_header(uint8_t *data, struct image_header *image_header) {
   return true;
 }
 
-bool inflate_body(uint8_t *in, int in_size, uint8_t *out, int out_size) {
+bool raw_inflate_once(uint8_t *in, int in_size, uint8_t *out, int out_size) {
   int ret;
   z_stream stream = {.zalloc = Z_NULL,
                      .zfree = Z_NULL,

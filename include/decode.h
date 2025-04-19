@@ -29,6 +29,6 @@ struct image_header {
 //! See https://www.w3.org/TR/png/#11IHDR for more info.
 bool read_image_header(uint8_t *data, struct image_header *image_header);
 
-bool inflate_body(uint8_t *in, int in_size, uint8_t *out, int out_size);
+bool raw_inflate_once(uint8_t *in, int in_size, uint8_t *out, int out_size);
 
 #endif

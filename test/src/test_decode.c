@@ -76,7 +76,7 @@ void test_inflate_body() {
       mmap(input_text, IN_BUF_SIZE, PROT_READ, MAP_PRIVATE, file, 0);
 
 
-  inflate_body((void*)deflated_memmap, size, (void *)result, OUT_SIZE_1);
+  raw_inflate_once((void*)deflated_memmap, size, (void *)result, OUT_SIZE_1);
   assert(memcmp(result, TEST_INFLATE_BODY_EXPECT_OUT_1, OUT_SIZE_1) == 0);
 }
 
