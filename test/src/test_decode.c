@@ -1,10 +1,10 @@
 #include <assert.h>
 #include <fcntl.h>
-#include <sys/stat.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -57,30 +57,30 @@ void test_read_image_header() {
   assert(image_header.interlace_method == 0);
 }
 
-const char TEST_INFLATE_IN_FILE_1[] = "test_data/deflated_test123";
-#define IN_BUF_SIZE 128
-const char TEST_INFLATE_BODY_EXPECT_OUT_1[] = "test123";
-#define OUT_SIZE_1 sizeof(TEST_INFLATE_BODY_EXPECT_OUT_1)
+u_int32_t file_size(int fd) {
+  struct stat stat_res;
+  fstat(fd, &stat_res);
+  return stat_res.st_size;
+}
 
-void test_inflate_body() {
-  char result[OUT_SIZE_1];
+void assert_inflated_file_eq(char *filename, char *expect_inflated) {
+  char result[BUF_SIZE];
+  char compressed_input[BUF_SIZE];
 
-  char input_text[IN_BUF_SIZE];
-  int file = open(TEST_INFLATE_IN_FILE_1, O_RDONLY);
-
-	struct stat stat_res;
-	fstat(file, &stat_res);
-	u_int32_t size = stat_res.st_size;
+  int file = open(filename, O_RDONLY);
 
   uint8_t *deflated_memmap =
-      mmap(input_text, IN_BUF_SIZE, PROT_READ, MAP_PRIVATE, file, 0);
+      mmap(compressed_input, BUF_SIZE, PROT_READ, MAP_PRIVATE, file, 0);
 
+  raw_inflate_once((void *)deflated_memmap, file_size(file), (void *)result, BUF_SIZE);
+  assert(memcmp(result, expect_inflated, strlen(expect_inflated)) == 0);
+}
 
-  raw_inflate_once((void*)deflated_memmap, size, (void *)result, OUT_SIZE_1);
-  assert(memcmp(result, TEST_INFLATE_BODY_EXPECT_OUT_1, OUT_SIZE_1) == 0);
+void test_raw_inflate() {
+  assert_inflated_file_eq("test_data/deflated_test123", "test123");
 }
 
 void run_png_decode_tests() {
   RUN_TEST(test_read_image_header);
-  RUN_TEST(test_inflate_body);
+  RUN_TEST(test_raw_inflate);
 }
