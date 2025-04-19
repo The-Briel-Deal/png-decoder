@@ -78,7 +78,7 @@ void assert_inflated_file_eq(char *filename, char *expect_inflated) {
 }
 
 void test_raw_inflate() {
-  assert_inflated_file_eq("test_data/deflated_test123", "test123");
+  assert_inflated_file_eq("test_data/deflated_text1", "test123");
 }
 
 void run_png_decode_tests() {

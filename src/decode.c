@@ -124,7 +124,7 @@ bool raw_inflate_once(uint8_t *in, int in_size, uint8_t *out, int out_size) {
                      .avail_in = 0,
                      .next_in = Z_NULL};
   ret = inflateInit2(&stream, -15);
-  assert(ret == 0);
+  assert(ret == Z_OK);
 
   stream.avail_in = in_size;
   stream.next_in = in;
@@ -132,10 +132,11 @@ bool raw_inflate_once(uint8_t *in, int in_size, uint8_t *out, int out_size) {
   stream.avail_out = out_size;
   stream.next_out = out;
 
-  ret = inflate(&stream, Z_FULL_FLUSH);
-  assert(ret == 1);
+  ret = inflate(&stream, Z_FINISH);
+  assert(ret == Z_STREAM_END);
 
-	inflateEnd(&stream);
+	ret = inflateEnd(&stream);
+	assert(ret == Z_OK);
 
   return true;
 }
