@@ -80,6 +80,13 @@ static void test_split_into_chunks() {
   png_chunk_list_init(&chunks);
   png_divide_into_chunks(factorio_icon_data, file_size(FACTORIO_ICON_IMG_PATH),
                          &chunks);
+
+  assert(chunks.size == 4);
+  assert(chunks.chunks[0].len == 13);
+  assert(chunks.chunks[0].type == CHUNK_IHDR);
+
+  assert(chunks.chunks[1].len == 4);
+  assert(chunks.chunks[1].type == CHUNK_GAMA);
 }
 
 void assert_inflated_file_eq(char *filename, char *expect_inflated) {
@@ -110,5 +117,5 @@ void test_raw_inflate() {
 void run_png_decode_tests() {
   RUN_TEST(test_read_image_header);
   RUN_TEST(test_raw_inflate);
-	RUN_TEST(test_split_into_chunks);
+  RUN_TEST(test_split_into_chunks);
 }

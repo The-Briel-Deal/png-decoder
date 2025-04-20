@@ -73,6 +73,8 @@ bool png_divide_into_chunks(const uint8_t *data, const int size,
       chunk->type = CHUNK_IDAT;
     } else if (memcmp(type, "IEND", 4) == 0) {
       chunk->type = CHUNK_IEND;
+    } else if (memcmp(type, "gAMA", 4) == 0) {
+      chunk->type = CHUNK_GAMA;
     } else {
       chunk->type = CHUNK_UNKNOWN;
     }

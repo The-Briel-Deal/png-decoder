@@ -32,6 +32,8 @@ enum chunk_type {
   CHUNK_PLTE = 2,
   CHUNK_IDAT = 3,
   CHUNK_IEND = 4,
+
+  CHUNK_GAMA = 5,
 };
 
 struct png_chunk {
