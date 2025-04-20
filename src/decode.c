@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <zlib.h>
 
 #include "decode.h"
@@ -21,6 +22,42 @@ static const int8_t TRUECOLOR_ALLOWED_BIT_DEPTHS[] = {8, 16};
 static const int8_t INDEXED_ALLOWED_BIT_DEPTHS[] = {1, 2, 4, 8};
 static const int8_t GREYSCALE_ALPHA_ALLOWED_BIT_DEPTHS[] = {8, 16};
 static const int8_t TRUECOLOR_ALPHA_ALLOWED_BIT_DEPTHS[] = {8, 16};
+
+#define PNG_CHUNK_LIST_CAPACITY 16
+
+bool png_chunk_list_init(struct png_chunk_list *chunks) {
+  chunks->capacity = PNG_CHUNK_LIST_CAPACITY;
+  chunks->size = 0;
+  chunks->chunks = malloc(sizeof(struct png_chunk) * 16);
+
+  return true;
+}
+bool png_divide_into_chunks(const uint8_t *data, const int size,
+                            struct png_chunk_list *chunks) {
+  assert(chunks->size == 0);
+  int data_pos = 0;
+  while (chunks->capacity > chunks->size && size > data_pos) {
+    struct png_chunk *chunk = &chunks->chunks[chunks->size++];
+
+    chunk->len = (uint32_t)data[data_pos];
+    data_pos += 4;
+
+    const char *type = (char *)&data[data_pos];
+    if (memcmp(type, "IHDR", 4) == 0) {
+      chunk->type = CHUNK_IHDR;
+    } else if (memcmp(type, "PLTE", 4) == 0) {
+      chunk->type = CHUNK_PLTE;
+    } else if (memcmp(type, "IDAT", 4) == 0) {
+      chunk->type = CHUNK_IDAT;
+    } else if (memcmp(type, "IEND", 4) == 0) {
+      chunk->type = CHUNK_IEND;
+    } else {
+      chunk->type = CHUNK_UNKNOWN;
+    }
+  }
+
+  return true;
+}
 
 static bool at_ihdr_label(uint8_t *data, int i) {
   if (data[i] != 'I')

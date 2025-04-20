@@ -25,6 +25,28 @@ struct image_header {
   int8_t interlace_method;
 };
 
+enum chunk_type {
+  CHUNK_UNKNOWN = 0,
+
+  CHUNK_IHDR = 1,
+  CHUNK_PLTE = 2,
+  CHUNK_IDAT = 3,
+  CHUNK_IEND = 4,
+};
+
+struct png_chunk {
+  uint32_t len;
+  enum chunk_type type;
+  uint8_t *chunk_data;
+  uint32_t crc;
+};
+
+struct png_chunk_list {
+  struct png_chunk *chunks;
+  int size;
+  int capacity;
+};
+
 //! Pulls IHDR out of png datastream.
 //! See https://www.w3.org/TR/png/#11IHDR for more info.
 bool read_image_header(uint8_t *data, struct image_header *image_header);
