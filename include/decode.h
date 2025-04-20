@@ -28,6 +28,7 @@ struct image_header {
 //! Pulls IHDR out of png datastream.
 //! See https://www.w3.org/TR/png/#11IHDR for more info.
 bool read_image_header(uint8_t *data, struct image_header *image_header);
+bool get_png_body(uint8_t *data);
 
 bool raw_inflate_once(uint8_t *in, int in_size, uint8_t *out, int out_size);
 

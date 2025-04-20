@@ -135,8 +135,35 @@ bool raw_inflate_once(uint8_t *in, int in_size, uint8_t *out, int out_size) {
   ret = inflate(&stream, Z_FINISH);
   assert(ret == Z_STREAM_END);
 
-	ret = inflateEnd(&stream);
-	assert(ret == Z_OK);
+  ret = inflateEnd(&stream);
+  assert(ret == Z_OK);
 
   return true;
 }
+
+bool inflate_once(uint8_t *in, int in_size, uint8_t *out, int out_size) {
+  int ret;
+  z_stream stream = {.zalloc = Z_NULL,
+                     .zfree = Z_NULL,
+                     .opaque = Z_NULL,
+                     .avail_in = 0,
+                     .next_in = Z_NULL};
+  ret = inflateInit(&stream);
+  assert(ret == Z_OK);
+
+  stream.avail_in = in_size;
+  stream.next_in = in;
+
+  stream.avail_out = out_size;
+  stream.next_out = out;
+
+  ret = inflate(&stream, Z_FINISH);
+  assert(ret == Z_STREAM_END);
+
+  ret = inflateEnd(&stream);
+  assert(ret == Z_OK);
+
+  return true;
+}
+
+bool get_png_body(uint8_t *data) {}
