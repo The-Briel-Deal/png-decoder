@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <zlib.h>
 
 #include "decode.h"
@@ -25,6 +26,18 @@ static const int8_t TRUECOLOR_ALPHA_ALLOWED_BIT_DEPTHS[] = {8, 16};
 
 #define PNG_CHUNK_LIST_CAPACITY 16
 
+// Reads Big-Endian png int to Little-Endian.
+uint32_t get_png_int(const uint8_t *data) {
+  uint32_t png_int = 0;
+
+  png_int |= (data[0] << (3 * 8));
+  png_int |= (data[1] << (2 * 8));
+  png_int |= (data[2] << (1 * 8));
+  png_int |= (data[3] << (0 * 8));
+
+  return png_int;
+}
+
 bool png_chunk_list_init(struct png_chunk_list *chunks) {
   chunks->capacity = PNG_CHUNK_LIST_CAPACITY;
   chunks->size = 0;
@@ -32,6 +45,7 @@ bool png_chunk_list_init(struct png_chunk_list *chunks) {
 
   return true;
 }
+
 bool png_divide_into_chunks(const uint8_t *data, const int size,
                             struct png_chunk_list *chunks) {
   assert(chunks->size == 0);
@@ -39,9 +53,11 @@ bool png_divide_into_chunks(const uint8_t *data, const int size,
   while (chunks->capacity > chunks->size && size > data_pos) {
     struct png_chunk *chunk = &chunks->chunks[chunks->size++];
 
-    chunk->len = (uint32_t)data[data_pos];
+    // Length
+    chunk->len = get_png_int(&data[data_pos]);
     data_pos += 4;
 
+    // Chunk Type
     const char *type = (char *)&data[data_pos];
     if (memcmp(type, "IHDR", 4) == 0) {
       chunk->type = CHUNK_IHDR;
@@ -54,6 +70,19 @@ bool png_divide_into_chunks(const uint8_t *data, const int size,
     } else {
       chunk->type = CHUNK_UNKNOWN;
     }
+    data_pos += 4;
+
+    // Chunk Data
+    if (chunk->len == 0) {
+      chunk->chunk_data = NULL;
+    } else {
+      chunk->chunk_data = &data[data_pos];
+    }
+    data_pos += chunk->len;
+
+    // CRC
+    chunk->crc = get_png_int(&data[data_pos]);
+		data_pos += 4;
   }
 
   return true;
@@ -69,18 +98,6 @@ static bool at_ihdr_label(uint8_t *data, int i) {
   if (data[i + 3] != 'R')
     return false;
   return true;
-}
-
-// Reads Big-Endian png int to Little-Endian.
-uint32_t get_png_int(uint8_t *data) {
-  uint32_t png_int = 0;
-
-  png_int |= (data[0] << (3 * 8));
-  png_int |= (data[1] << (2 * 8));
-  png_int |= (data[2] << (1 * 8));
-  png_int |= (data[3] << (0 * 8));
-
-  return png_int;
 }
 
 static bool i8_in_list(const int8_t num, const int8_t *list, int size) {

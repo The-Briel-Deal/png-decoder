@@ -37,7 +37,7 @@ enum chunk_type {
 struct png_chunk {
   uint32_t len;
   enum chunk_type type;
-  uint8_t *chunk_data;
+  const uint8_t *chunk_data;
   uint32_t crc;
 };
 
