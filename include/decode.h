@@ -50,6 +50,10 @@ struct png_chunk_list {
 //! Pulls IHDR out of png datastream.
 //! See https://www.w3.org/TR/png/#11IHDR for more info.
 bool read_image_header(uint8_t *data, struct image_header *image_header);
+
+bool png_chunk_list_init(struct png_chunk_list *chunks);
+bool png_divide_into_chunks(const uint8_t *data, const int size,
+                            struct png_chunk_list *chunks);
 bool get_png_body(uint8_t *data);
 
 bool raw_inflate_once(uint8_t *in, int in_size, uint8_t *out, int out_size);

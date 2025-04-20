@@ -50,6 +50,12 @@ bool png_divide_into_chunks(const uint8_t *data, const int size,
                             struct png_chunk_list *chunks) {
   assert(chunks->size == 0);
   int data_pos = 0;
+
+  // Validate Signature
+  uint8_t png_sig[8] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
+  assert(memcmp(png_sig, data, sizeof(png_sig)) == 0);
+  data_pos += sizeof(png_sig);
+
   while (chunks->capacity > chunks->size && size > data_pos) {
     struct png_chunk *chunk = &chunks->chunks[chunks->size++];
 
@@ -82,7 +88,7 @@ bool png_divide_into_chunks(const uint8_t *data, const int size,
 
     // CRC
     chunk->crc = get_png_int(&data[data_pos]);
-		data_pos += 4;
+    data_pos += 4;
   }
 
   return true;

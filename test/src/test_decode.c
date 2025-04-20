@@ -20,7 +20,21 @@
     test();                                                                    \
   } while (false)
 
+static u_int32_t fd_file_size(int fd) {
+  struct stat stat_res;
+  fstat(fd, &stat_res);
+  return stat_res.st_size;
+}
+
+static u_int32_t file_size(const char *path) {
+  int file = open(path, O_RDONLY);
+  u_int32_t size = fd_file_size(file);
+  close(file);
+
+  return size;
+}
 static uint8_t *get_png_mmap(const char *path, uint8_t *buf, int size) {
+  assert(file_size(path) < BUF_SIZE);
   int factorio_icon = open(path, O_RDONLY);
   assert(factorio_icon != -1);
   uint8_t *factorio_icon_data =
@@ -57,10 +71,15 @@ void test_read_image_header() {
   assert(image_header.interlace_method == 0);
 }
 
-u_int32_t file_size(int fd) {
-  struct stat stat_res;
-  fstat(fd, &stat_res);
-  return stat_res.st_size;
+static void test_split_into_chunks() {
+  uint8_t buf[BUF_SIZE];
+  uint8_t *factorio_icon_data =
+      get_png_mmap(FACTORIO_ICON_IMG_PATH, buf, BUF_SIZE);
+
+  struct png_chunk_list chunks;
+  png_chunk_list_init(&chunks);
+  png_divide_into_chunks(factorio_icon_data, file_size(FACTORIO_ICON_IMG_PATH),
+                         &chunks);
 }
 
 void assert_inflated_file_eq(char *filename, char *expect_inflated) {
@@ -72,7 +91,7 @@ void assert_inflated_file_eq(char *filename, char *expect_inflated) {
   uint8_t *deflated_memmap =
       mmap(compressed_input, BUF_SIZE, PROT_READ, MAP_PRIVATE, file, 0);
 
-  raw_inflate_once((void *)deflated_memmap, file_size(file), (void *)result,
+  raw_inflate_once((void *)deflated_memmap, fd_file_size(file), (void *)result,
                    BUF_SIZE);
   assert(memcmp(result, expect_inflated, strlen(expect_inflated)) == 0);
 }
@@ -85,10 +104,11 @@ void test_raw_inflate() {
 //   uint8_t *factorio_icon_data =
 //       get_png_mmap(FACTORIO_ICON_IMG_PATH, buf, BUF_SIZE);
 // 	get_png_body(factorio_icon_data);
-// 
+//
 // }
 
 void run_png_decode_tests() {
   RUN_TEST(test_read_image_header);
   RUN_TEST(test_raw_inflate);
+	RUN_TEST(test_split_into_chunks);
 }
