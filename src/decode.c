@@ -166,4 +166,4 @@ bool inflate_once(uint8_t *in, int in_size, uint8_t *out, int out_size) {
   return true;
 }
 
-bool get_png_body(uint8_t *data) {}
+// bool get_png_body(uint8_t *data) {}

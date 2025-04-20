@@ -81,12 +81,12 @@ void test_raw_inflate() {
   assert_inflated_file_eq("test_data/deflated_text1", "test123");
 }
 
-void test_inflate_png_body() {
-  uint8_t *factorio_icon_data =
-      get_png_mmap(FACTORIO_ICON_IMG_PATH, buf, BUF_SIZE);
-	get_png_body(factorio_icon_data);
-
-}
+// void test_inflate_png_body() {
+//   uint8_t *factorio_icon_data =
+//       get_png_mmap(FACTORIO_ICON_IMG_PATH, buf, BUF_SIZE);
+// 	get_png_body(factorio_icon_data);
+// 
+// }
 
 void run_png_decode_tests() {
   RUN_TEST(test_read_image_header);
